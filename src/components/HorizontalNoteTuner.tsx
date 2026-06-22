@@ -35,6 +35,7 @@ const NOTE_NAMES = [
 
 const ITEM_WIDTH = 112;
 const SCROLL_SETTLE_MS = 180;
+const INDICATOR_TRAVEL_VW = 34;
 
 const midiToFreq = (midi: number): number =>
   440 * Math.pow(2, (midi - 69) / 12);
@@ -93,7 +94,8 @@ export const HorizontalNoteTuner: React.FC<HorizontalNoteTunerProps> = ({
     ? centsFromFreq(measuredHz, activeNote.frequency)
     : null;
   const clampedCents = cents === null ? null : clamp(cents, -50, 50);
-  const indicatorOffset = clampedCents === null ? 0 : (clampedCents / 50) * 50;
+  const indicatorOffsetVw =
+    clampedCents === null ? 0 : (clampedCents / 50) * INDICATOR_TRAVEL_VW;
   const outOfRangeDirection =
     cents === null || Math.abs(cents) <= 50
       ? null
@@ -214,7 +216,7 @@ export const HorizontalNoteTuner: React.FC<HorizontalNoteTunerProps> = ({
   return (
     <div
       style={{
-        minHeight: "100vh",
+        minHeight: "100dvh",
         width: "100%",
         overflow: "hidden",
         position: "relative",
@@ -241,72 +243,73 @@ export const HorizontalNoteTuner: React.FC<HorizontalNoteTunerProps> = ({
         style={{
           position: "relative",
           zIndex: 1,
-          minHeight: "100vh",
+          minHeight: "100dvh",
           display: "grid",
           gridTemplateRows: "auto 1fr auto",
           padding:
-            "max(18px, env(safe-area-inset-top)) 0 max(22px, env(safe-area-inset-bottom))",
+            "max(10px, env(safe-area-inset-top)) 0 max(8px, env(safe-area-inset-bottom))",
         }}
       >
-        <header
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: started ? "space-between" : "center",
-            gap: "1rem",
-            padding: "0 1.25rem",
-          }}
-        >
-          <div>
-            <div
-              style={{
-                fontSize: "0.8rem",
-                letterSpacing: "0.22em",
-                textTransform: "uppercase",
-                color: "rgba(235, 242, 250, 0.58)",
-                textAlign: started ? "left" : "center",
-              }}
-            >
-              Guitar Tuner
-            </div>
-            {started && (
+        {started ? (
+          <header
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: "1rem",
+              padding: "0.15rem 1rem 0",
+            }}
+          >
+            <div>
               <div
                 style={{
-                  marginTop: "0.45rem",
-                  fontSize: "clamp(1.4rem, 3vw, 2.35rem)",
+                  fontSize: "0.76rem",
+                  letterSpacing: "0.22em",
+                  textTransform: "uppercase",
+                  color: "rgba(235, 242, 250, 0.58)",
+                }}
+              >
+                Guitar Tuner
+              </div>
+              <div
+                style={{
+                  marginTop: "0.3rem",
+                  fontSize: "clamp(1.2rem, 3vw, 2rem)",
                   fontWeight: 700,
                   letterSpacing: "-0.04em",
                 }}
               >
                 {activeNote?.name ?? "Swipe Through Notes"}
               </div>
-            )}
-          </div>
+            </div>
 
-          <div
-            style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}
-          >
-            {selectedMidi !== null && (
-              <button
-                type="button"
-                onClick={() => setSelectedMidi(null)}
-                style={{
-                  pointerEvents: "auto",
-                  border: "1px solid rgba(255,255,255,0.16)",
-                  background: "rgba(255,255,255,0.06)",
-                  color: "#f5f7fa",
-                  borderRadius: "999px",
-                  padding: "0.72rem 1rem",
-                  fontSize: "0.92rem",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                }}
-              >
-                Auto Detect
-              </button>
-            )}
-          </div>
-        </header>
+            <div
+              style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}
+            >
+              {selectedMidi !== null && (
+                <button
+                  type="button"
+                  onClick={() => setSelectedMidi(null)}
+                  style={{
+                    pointerEvents: "auto",
+                    border: "1px solid rgba(255,255,255,0.16)",
+                    background: "rgba(255,255,255,0.06)",
+                    color: "#f5f7fa",
+                    borderRadius: "999px",
+                    padding: "0.68rem 0.92rem",
+                    fontSize: "0.88rem",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                  }}
+                >
+                  Auto Detect
+                </button>
+              )}
+            </div>
+          </header>
+        ) : (
+          <div />
+        )}
 
         <main
           style={{
@@ -318,11 +321,11 @@ export const HorizontalNoteTuner: React.FC<HorizontalNoteTunerProps> = ({
           <div
             style={{
               position: "absolute",
-              top: "18%",
+              top: "14%",
               left: "50%",
               transform: "translateX(-50%)",
               width: "2px",
-              height: "44vh",
+              height: "34vh",
               background: isInTune
                 ? "linear-gradient(180deg, rgba(120,255,196,0.85), rgba(120,255,196,0.25))"
                 : "linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.22))",
@@ -336,11 +339,11 @@ export const HorizontalNoteTuner: React.FC<HorizontalNoteTunerProps> = ({
             <div
               style={{
                 position: "absolute",
-                top: "22%",
-                left: "50%",
-                transform: `translateX(calc(${indicatorOffset}% - 50%))`,
+                top: "17%",
+                left: `calc(50% + ${indicatorOffsetVw}vw)`,
+                transform: "translateX(-50%)",
                 width: "3px",
-                height: "36vh",
+                height: "28vh",
                 borderRadius: "999px",
                 background: isInTune
                   ? "linear-gradient(180deg, #7cffc0, rgba(124,255,192,0.35))"
@@ -359,7 +362,7 @@ export const HorizontalNoteTuner: React.FC<HorizontalNoteTunerProps> = ({
             <div
               style={{
                 position: "absolute",
-                top: "20%",
+                top: "14%",
                 [outOfRangeDirection === "left" ? "left" : "right"]: "1rem",
                 color: "#f59e0b",
                 fontSize: "1.8rem",
@@ -385,7 +388,7 @@ export const HorizontalNoteTuner: React.FC<HorizontalNoteTunerProps> = ({
               msOverflowStyle: "none",
               touchAction: "pan-x",
               scrollSnapType: "x proximity",
-              padding: "14vh 0 18vh",
+              padding: "8vh 0 13.5vh",
               cursor: "grab",
             }}
           >
@@ -434,7 +437,7 @@ export const HorizontalNoteTuner: React.FC<HorizontalNoteTunerProps> = ({
                   >
                     <span
                       style={{
-                        fontSize: "clamp(2.3rem, 5vw, 4.4rem)",
+                        fontSize: "clamp(1.9rem, 6.8vw, 3.8rem)",
                         lineHeight: 1,
                         letterSpacing: "-0.05em",
                         fontWeight: isSelected ? 800 : isDetected ? 700 : 500,
@@ -468,7 +471,9 @@ export const HorizontalNoteTuner: React.FC<HorizontalNoteTunerProps> = ({
           <div
             style={{
               position: "absolute",
-              inset: "auto 0 10vh",
+              left: 0,
+              right: 0,
+              bottom: "max(8px, env(safe-area-inset-bottom))",
               display: "flex",
               justifyContent: "center",
               pointerEvents: "none",
@@ -477,16 +482,17 @@ export const HorizontalNoteTuner: React.FC<HorizontalNoteTunerProps> = ({
           >
             <div
               style={{
-                minWidth: "min(92vw, 520px)",
-                padding: "0.95rem 1.1rem",
-                borderRadius: "24px",
+                width: "min(94vw, 520px)",
+                padding: "0.82rem 0.95rem",
+                borderRadius: "20px",
                 background: "rgba(6, 16, 25, 0.76)",
                 border: "1px solid rgba(255,255,255,0.08)",
                 backdropFilter: "blur(12px)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
-                gap: "1rem",
+                gap: "0.9rem",
+                flexWrap: "wrap",
               }}
             >
               <div>
@@ -503,7 +509,7 @@ export const HorizontalNoteTuner: React.FC<HorizontalNoteTunerProps> = ({
                 <div
                   style={{
                     marginTop: "0.25rem",
-                    fontSize: "1rem",
+                    fontSize: "0.95rem",
                     fontWeight: 600,
                     color: "rgba(245,247,250,0.96)",
                   }}
@@ -512,7 +518,7 @@ export const HorizontalNoteTuner: React.FC<HorizontalNoteTunerProps> = ({
                 </div>
               </div>
 
-              <div style={{ textAlign: "right" }}>
+              <div style={{ textAlign: "right", marginLeft: "auto" }}>
                 <div
                   style={{
                     fontSize: "0.72rem",
@@ -526,7 +532,7 @@ export const HorizontalNoteTuner: React.FC<HorizontalNoteTunerProps> = ({
                 <div
                   style={{
                     marginTop: "0.25rem",
-                    fontSize: "1rem",
+                    fontSize: "0.95rem",
                     fontWeight: 700,
                     color: isInTune ? "#7cffc0" : "rgba(245,247,250,0.96)",
                   }}
@@ -548,28 +554,36 @@ export const HorizontalNoteTuner: React.FC<HorizontalNoteTunerProps> = ({
                 backdropFilter: "blur(8px)",
                 display: "grid",
                 placeItems: "center",
-                padding: "1.5rem",
+                padding:
+                  "max(10px, env(safe-area-inset-top)) 1rem max(10px, env(safe-area-inset-bottom))",
                 zIndex: 6,
               }}
             >
               <div
                 style={{
-                  width: "min(88vw, 360px)",
-                  padding: "1.25rem 1rem",
-                  borderRadius: "28px",
-                  background: "rgba(8, 18, 28, 0.92)",
-                  border: "1px solid rgba(255,255,255,0.08)",
-                  boxShadow: "0 20px 50px rgba(0,0,0,0.35)",
+                  width: "min(82vw, 300px)",
+                  maxWidth: "300px",
+                  padding: "0.9rem 0.75rem",
                   textAlign: "center",
                 }}
               >
+                <div
+                  style={{
+                    marginBottom: "0.7rem",
+                    fontSize: "0.82rem",
+                    letterSpacing: "0.22em",
+                    textTransform: "uppercase",
+                    color: "rgba(235, 242, 250, 0.64)",
+                  }}
+                >
+                  Guitar Tuner
+                </div>
                 <p
                   style={{
                     margin: "0 0 1rem",
                     color: "rgba(232,240,247,0.7)",
                     lineHeight: 1.45,
-                    fontSize: "clamp(0.92rem, 3.8vw, 1rem)",
-                    textWrap: "balance",
+                    fontSize: "clamp(0.88rem, 3.7vw, 0.98rem)",
                   }}
                 >
                   Swipe the note ruler or tap a note to lock it in the center.
@@ -581,11 +595,11 @@ export const HorizontalNoteTuner: React.FC<HorizontalNoteTunerProps> = ({
                     width: "100%",
                     border: 0,
                     borderRadius: "999px",
-                    padding: "0.95rem 1.2rem",
+                    padding: "0.9rem 1rem",
                     background: "linear-gradient(135deg, #7dd3fc, #38bdf8)",
                     color: "#04131d",
                     fontWeight: 800,
-                    fontSize: "1rem",
+                    fontSize: "0.98rem",
                     cursor: "pointer",
                   }}
                 >
