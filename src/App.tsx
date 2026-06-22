@@ -5,13 +5,13 @@ import {
 
 function App() {
   const settings: SpectrumSettings = {
-    barCount: 12,
-    pillCount: 40,
+    fftSize: 2048,
+    smoothingTimeConstant: 0.8,
   };
 
   return (
     <>
-      <SpectrumVisualizer settings={settings} />;
+      <SpectrumVisualizer settings={settings} />
     </>
   );
 }
