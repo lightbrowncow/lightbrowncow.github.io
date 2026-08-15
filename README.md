@@ -16,7 +16,7 @@ That's why I wrote this simple guitar tuner pitch detection thing with a few cri
 
 ### Usage: 
 
-> Go to https://lightbrowncow.github.io/
-> Add it to homescreen.
-> Use it by enabling your phone's microphone (no, it will not spy on you).
-> Done. 
+1. Go to https://lightbrowncow.github.io/
+2. Add it to homescreen.
+3. Use it by enabling your phone's microphone (no, it will not spy on you).
+ 
